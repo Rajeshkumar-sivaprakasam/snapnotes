@@ -9,13 +9,15 @@ import { useDebounce } from "@/lib/useDebounce";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { noteType } from "@/lib/db/schema";
+import { Text } from "@tiptap/extension-text";
+
 type Props = {
   note: noteType;
 };
 
 const TipTapEditor = ({ note }: Props) => {
   const [editorState, setEditorState] = React.useState(
-    note.editorState || `<h1>${note.name}</h1>`
+    note?.editorState || `<h1>${note?.name}</h1>`
   );
   const saveNote = useMutation({
     mutationFn: async () => {
@@ -26,9 +28,22 @@ const TipTapEditor = ({ note }: Props) => {
       return response.data;
     },
   });
+
+  // customizing  @tiptap/extension-text
+  const customText = Text.extend({
+    addKeyboardShortcuts() {
+      return {
+        "Shift-a": () => {
+          console.log("Activate AI");
+          return true;
+        },
+      };
+    },
+  });
+
   const editor = useEditor({
     autofocus: true,
-    extensions: [StarterKit],
+    extensions: [StarterKit, customText],
     content: editorState,
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());

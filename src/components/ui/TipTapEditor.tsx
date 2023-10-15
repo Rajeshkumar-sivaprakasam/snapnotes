@@ -6,11 +6,26 @@ import TipTapMenuEditor from "./TipTapMenuBar";
 import { Button } from "./button";
 import TipTapMenuBar from "./TipTapMenuBar";
 import { useDebounce } from "@/lib/useDebounce";
-type Props = {};
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { noteType } from "@/lib/db/schema";
+type Props = {
+  note: noteType;
+};
 
-const TipTapEditor = (props: Props) => {
-  const [editorState, setEditorState] = React.useState("");
-
+const TipTapEditor = ({ note }: Props) => {
+  const [editorState, setEditorState] = React.useState(
+    note.editorState || `<h1>${note.name}</h1>`
+  );
+  const saveNote = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post("/api/saveNote", {
+        noteId: note.id,
+        editorState,
+      });
+      return response.data;
+    },
+  });
   const editor = useEditor({
     autofocus: true,
     extensions: [StarterKit],
@@ -21,12 +36,24 @@ const TipTapEditor = (props: Props) => {
   });
   // debounce to optimized api call
   const debouncedEditorState = useDebounce(editorState, 500);
-  React.useEffect(() => {}, [debouncedEditorState]);
+  React.useEffect(() => {
+    if (debouncedEditorState === "") return;
+    saveNote.mutate(undefined, {
+      onSuccess: (data) => {
+        console.log("Success Update!", data);
+      },
+      onError: (err) => {
+        console.error(err);
+      },
+    });
+  }, [debouncedEditorState]);
   return (
     <>
       <div className="flex">
         {editor && <TipTapMenuBar editor={editor} />}
-        <Button>Saved</Button>
+        <Button disabled variant={"outline"}>
+          {saveNote.isLoading ? "Saving..." : "Saved"}
+        </Button>
       </div>
       <div className="prose">
         {/* not understanding this prose */}

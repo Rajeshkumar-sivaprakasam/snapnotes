@@ -11,10 +11,10 @@ const TypeWriterTitle = (props: Props) => {
       }}
       onInit={(typeWriter) => {
         typeWriter
-          .typeString("🚀 Supercharged Productivity.")
+          .typeString("Supercharged Productivity.")
           .pauseFor(1000)
           .deleteAll()
-          .typeString("🤖 AI Powered Insights.")
+          .typeString("AI Powered Insights.")
           .start();
       }}
     />

@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Separator } from "@/components/ui/separator";
+import CreateNoteDialogue from "@/components/ui/CreateNoteDialogue";
 type Props = {};
 
 const DashboardPage = (props: Props) => {
@@ -37,6 +38,11 @@ const DashboardPage = (props: Props) => {
           <div className="text-xl text-gray-500 ">
             You have no notes to render
           </div>
+        </div>
+
+        {/* display all notes here */}
+        <div className="grid sm:grid-cols-3 md:grid-cols-5 grid-cols-1">
+          <CreateNoteDialogue />
         </div>
       </div>
     </>

@@ -1,5 +1,5 @@
 "use client";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import React from "react";
 import {
   Dialog,
@@ -11,10 +11,40 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 type Props = {};
 
 const CreateNoteDialogue = (props: Props) => {
+  const router = useRouter();
   const [input, setInput] = React.useState("");
+  const createNoteBook = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post("/api/createNoteBook", {
+        name: input,
+      });
+      return response.data;
+    },
+  });
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (input === "") {
+      window.alert("Please enter a name for your notebook!");
+      return;
+    }
+
+    createNoteBook.mutate(undefined, {
+      onSuccess: ({ note_id }) => {
+        console.log("Created_note with id:", note_id);
+        router.push(`/notes/${note_id}`);
+      },
+      onError: (err) => {
+        console.log("your notes creation is failed", err);
+        window.alert("Failed to create note!");
+      },
+    });
+  };
   return (
     <Dialog>
       <DialogTrigger>
@@ -30,7 +60,7 @@ const CreateNoteDialogue = (props: Props) => {
             You can create a new note by clicking this button
           </DialogDescription>
         </DialogHeader>
-        <form>
+        <form onSubmit={handleSubmit}>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -42,7 +72,14 @@ const CreateNoteDialogue = (props: Props) => {
               {" "}
               cancel
             </Button>
-            <Button type="submit" className="bg-green-600">
+            <Button
+              type="submit"
+              className="bg-green-600"
+              disabled={createNoteBook.isLoading}
+            >
+              {createNoteBook.isLoading && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
               Create
             </Button>
           </div>

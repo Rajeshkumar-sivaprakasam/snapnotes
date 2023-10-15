@@ -1,5 +1,4 @@
 import { $notes } from "@/lib/db/schema";
-import { $notes } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";

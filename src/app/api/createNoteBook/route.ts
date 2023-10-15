@@ -4,6 +4,9 @@ import { generateImage, generateImagePrompt } from "@/lib/openai";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
+// to increase speed in versal
+export const runtime = "edge";
+
 export async function POST(req: Request) {
   const { userId } = auth();
   if (!userId) {
@@ -37,9 +40,7 @@ export async function POST(req: Request) {
     .returning({
       insertedId: $notes.id,
     });
-  return  NextResponse.json(
-{
-  note_id: notes_id[0].insertedId
-}
-  );
+  return NextResponse.json({
+    note_id: notes_id[0].insertedId,
+  });
 }

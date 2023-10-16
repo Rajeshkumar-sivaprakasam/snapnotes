@@ -49,7 +49,7 @@ const CreateNoteDialogue = (props: Props) => {
         console.log("Created_note with id:", note_id);
         // hit another endpoint to uplod the temp dalle url to permanent firebase url
         uploadToFirebase.mutate(note_id);
-        router.push(`/notes/${note_id}`);
+        router.push(`/notebook/${note_id}`);
       },
       onError: (err) => {
         console.log("your notes creation is failed", err);
